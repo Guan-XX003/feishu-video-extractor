@@ -1,0 +1,127 @@
+:root {
+  font-family: Inter, "SF Pro Text", "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: #1f2329;
+  background: #ffffff;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+
+body { margin: 0; min-width: 320px; background: #ffffff; }
+
+button, select, input { font: inherit; }
+
+button { cursor: pointer; }
+
+.app-shell {
+  width: min(100%, 460px);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 24px 20px 20px;
+  background: #ffffff;
+}
+
+.loading-shell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #646a73;
+  font-size: 14px;
+}
+
+.app-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 26px;
+}
+
+.title-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  border-radius: 8px;
+  color: #3370ff;
+  background: #e8f0ff;
+}
+
+.app-header h1 { margin: 0; font-size: 24px; line-height: 32px; font-weight: 650; letter-spacing: -0.01em; }
+.app-header p { margin: 4px 0 0; color: #646a73; font-size: 13px; line-height: 20px; }
+
+.form-section { display: grid; gap: 20px; }
+
+.field-group { display: grid; gap: 8px; }
+.field-label, .scope-group legend { font-size: 14px; line-height: 22px; font-weight: 600; color: #1f2329; }
+
+.select-shell { position: relative; display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 13px; border: 1px solid #dfe1e5; border-radius: 8px; color: #646a73; background: #fff; transition: border-color 160ms ease, box-shadow 160ms ease; }
+.select-shell:focus-within { border-color: #3370ff; box-shadow: 0 0 0 3px rgba(51, 112, 255, 0.12); }
+.select-shell select { width: 100%; height: 100%; border: 0; outline: 0; appearance: none; color: #1f2329; background: transparent; font-size: 14px; }
+.select-chevron { pointer-events: none; color: #8f959e; }
+
+.scope-group { display: grid; gap: 12px; padding: 0; margin: 0; border: 0; }
+.scope-group legend { margin-bottom: 2px; }
+.radio-row { display: flex; align-items: center; gap: 10px; min-height: 28px; font-size: 14px; color: #1f2329; cursor: pointer; }
+.radio-row input { appearance: none; width: 18px; height: 18px; margin: 0; border: 1.5px solid #b8bdc6; border-radius: 50%; background: #fff; }
+.radio-row input:checked { border: 5px solid #3370ff; }
+
+.primary-button, .secondary-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 8px; font-weight: 600; transition: transform 120ms ease, background 120ms ease, opacity 120ms ease; }
+.primary-button { width: 100%; height: 44px; color: #fff; background: #3370ff; font-size: 15px; }
+.primary-button:hover:not(:disabled) { background: #245bdb; }
+.primary-button:active:not(:disabled) { transform: translateY(1px); }
+.primary-button:disabled { cursor: not-allowed; opacity: 0.48; }
+.secondary-button { min-height: 36px; padding: 8px 12px; color: #245bdb; background: #e8f0ff; font-size: 13px; }
+
+.empty-fields { margin-bottom: 20px; padding: 14px; border: 1px solid #d9e5ff; border-radius: 8px; background: #f5f8ff; }
+.empty-fields p { margin: 0 0 10px; color: #4e5969; font-size: 13px; }
+.inline-message { margin: -8px 0 0; color: #d54941; font-size: 12px; line-height: 18px; }
+
+.progress-panel { margin-top: 22px; padding: 16px; border: 1px solid #dfe1e5; border-radius: 10px; background: #fff; }
+.progress-heading { display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+.progress-heading strong { font-weight: 600; }
+.progress-heading span { color: #8f959e; font-size: 12px; }
+.progress-track { height: 7px; margin-top: 14px; overflow: hidden; border-radius: 999px; background: #e8eaed; }
+.progress-fill { height: 100%; border-radius: inherit; background: #3370ff; transition: width 180ms ease; }
+.progress-stats { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 16px; }
+.progress-stats span { display: flex; align-items: center; justify-content: center; gap: 7px; color: #4e5969; font-size: 13px; border-right: 1px solid #e5e6eb; }
+.progress-stats span:last-child { border-right: 0; }
+.dot { width: 8px; height: 8px; border-radius: 50%; }
+.success-dot { background: #00a870; }
+.skip-dot { background: #ff8800; }
+.error-dot { background: #f54a45; }
+
+.log-section { margin-top: 24px; }
+.section-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.section-heading h2 { margin: 0; font-size: 15px; line-height: 24px; font-weight: 600; }
+.text-button { padding: 3px 0; border: 0; color: #3370ff; background: transparent; font-size: 12px; }
+.log-list { overflow: hidden; border: 1px solid #dfe1e5; border-radius: 8px; background: #fff; }
+.log-row { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; align-items: center; gap: 8px; min-height: 42px; padding: 8px 12px; border-bottom: 1px solid #eef0f2; }
+.log-row:last-child { border-bottom: 0; }
+.log-message { overflow: hidden; color: #373c43; font-size: 12px; line-height: 18px; text-overflow: ellipsis; white-space: nowrap; }
+.log-row time { color: #8f959e; font-size: 11px; }
+.status-success { color: #00a870; }
+.status-skip { color: #ff8800; }
+.status-error { color: #f54a45; }
+.status-info { color: #3370ff; }
+.empty-log { margin: 0; padding: 20px 14px; color: #8f959e; font-size: 12px; line-height: 18px; text-align: center; }
+
+.safety-note { display: flex; align-items: flex-start; gap: 9px; margin-top: 20px; padding: 11px 12px; border: 1px solid #ffd49b; border-radius: 8px; color: #ad6800; background: #fff8e8; font-size: 12px; line-height: 18px; }
+.safety-note svg { flex: 0 0 auto; margin-top: 1px; }
+
+.spin { animation: spin 900ms linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 380px) {
+  .app-shell { padding: 20px 14px 16px; }
+  .app-header h1 { font-size: 22px; }
+  .progress-stats span { font-size: 12px; }
+  .log-row { grid-template-columns: 20px minmax(0, 1fr); }
+  .log-row time { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+}

@@ -1,0 +1,1 @@
+"""Video extractor backend package."""

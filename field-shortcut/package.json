@@ -1,0 +1,20 @@
+{
+  "name": "growing-video-downloader-field-shortcut",
+  "version": "0.1.2",
+  "private": true,
+  "scripts": {
+    "start": "block-basekit-cli start:field",
+    "build": "block-basekit-cli build:field",
+    "pack": "block-basekit-cli pack:field",
+    "test": "ts-node test/index.ts"
+  },
+  "dependencies": {
+    "@lark-opdev/block-basekit-server-api": "1.0.6"
+  },
+  "devDependencies": {
+    "@lark-opdev/block-basekit-cli": "1.0.5",
+    "@types/node": "^20.17.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2"
+  }
+}

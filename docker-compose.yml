@@ -1,0 +1,19 @@
+services:
+  extractor:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:4173}
+      MAX_VIDEO_SIZE_MB: ${MAX_VIDEO_SIZE_MB:-30}
+      MAX_AUDIO_SOURCE_SIZE_MB: ${MAX_AUDIO_SOURCE_SIZE_MB:-500}
+      DOWNLOAD_CONCURRENCY: ${DOWNLOAD_CONCURRENCY:-2}
+      ALLOWED_VIDEO_DOMAINS: ${ALLOWED_VIDEO_DOMAINS:-douyin.com,iesdouyin.com,tiktok.com,xiaohongshu.com,xhslink.com,bilibili.com,b23.tv,kuaishou.com}
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:8000}
+      TICKET_SECRET: ${TICKET_SECRET:-change-me-in-production}
+      TICKET_TTL_SECONDS: ${TICKET_TTL_SECONDS:-600}
+      PREPARED_VIDEO_DIR: ${PREPARED_VIDEO_DIR:-/tmp/feishu-video-extractor-cache}
+      COOKIES_FILE: ${COOKIES_FILE:-}
+      REQUIRE_BASE_SIGNATURE: ${REQUIRE_BASE_SIGNATURE:-false}
+      EXPECTED_PACK_ID: ${EXPECTED_PACK_ID:-}
+    restart: unless-stopped
