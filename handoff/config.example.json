@@ -1,0 +1,15 @@
+{
+  "feishu_tenant_domain": "https://your-company.feishu.cn",
+  "shortcut_display_name": "视频下载（你的标识）",
+  "shortcut_description": "将公开视频分享链接转为视频或音频附件",
+  "release_scope": "company_internal",
+  "backend_provider": "railway",
+  "backend_public_url": "https://replace-with-your-backend.example.com",
+  "expected_pack_ids": [],
+  "cookie_browser": "chrome",
+  "enable_windows_worker": false,
+  "windows_worker_browser": "edge",
+  "max_video_size_mb": 30,
+  "max_audio_source_size_mb": 500,
+  "notes": "此文件只能填写非敏感信息。不要写入 Cookie、Token 或 Secret。"
+}

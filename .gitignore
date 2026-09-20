@@ -11,3 +11,5 @@ field-shortcut/output/
 *.tar.gz
 *.zip
 *.tsbuildinfo
+release/
+handoff/config.local.json

@@ -3,6 +3,8 @@
   "version": "0.1.2",
   "private": true,
   "scripts": {
+    "check-config": "node scripts/check-config.mjs",
+    "prebuild": "npm run check-config",
     "start": "block-basekit-cli start:field",
     "build": "block-basekit-cli build:field",
     "pack": "block-basekit-cli pack:field",

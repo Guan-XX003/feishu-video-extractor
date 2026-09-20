@@ -20,6 +20,16 @@
 - Railway CLI 配置目录
 - 任何包含 `TOKEN`、`SECRET`、Cookie 的文件
 
+新电脑上的 Agent 应先阅读 `AGENTS.md` 和 `docs/AGENT_START_HERE.md`，然后运行：
+
+```bash
+./scripts/doctor.sh
+./scripts/verify-no-secrets.sh
+./scripts/install-dependencies.sh
+```
+
+Windows PowerShell 使用 `scripts/` 下的同名 `.ps1` 脚本。
+
 ## 第二步：部署后端
 
 ### Railway CLI 方式
@@ -75,7 +85,11 @@ Cookie 只应保存在后端密钥环境变量中，不能提交到 Git、不能
 ## 第四步：创建并发布新字段捷径
 
 1. 在新飞书账号的开放平台创建字段捷径应用。
-2. 将 `field-shortcut/src/config.ts` 中的 `BACKEND_URL` 改成新的后端 HTTPS 地址。
+2. 将 `field-shortcut/src/config.ts` 中的 `BACKEND_URL` 改成新的后端 HTTPS 地址。也可以运行：
+
+```bash
+./scripts/set-backend-url.sh https://你的后端域名
+```
 3. 构建并打包：
 
 ```bash
@@ -119,3 +133,14 @@ WORKER_TOKEN=随机生成的至少32字符密钥
 ## 安全边界
 
 只下载自己有权处理的公开内容。该项目不用于绕过登录、付费墙、DRM 或访问控制。每个飞书账号都应使用自己的应用、自己的 Cookie 和自己的密钥。
+
+## 重新生成迁移包
+
+在项目根目录执行：
+
+```bash
+./scripts/verify-no-secrets.sh
+./package-source.sh
+```
+
+脚本会在 `release/` 同时生成 ZIP 和 TAR.GZ。迁移包不包含 Cookie、Token、`.env`、Railway 登录信息、依赖目录或已发布字段捷径 ZIP。

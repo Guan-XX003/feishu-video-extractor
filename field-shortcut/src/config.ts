@@ -1,1 +1,2 @@
-export const BACKEND_URL = 'https://feishu-video-extractor-production.up.railway.app';
+// Run scripts/set-backend-url.sh (or .ps1) before building a production package.
+export const BACKEND_URL = 'https://replace-with-your-backend.example.com';

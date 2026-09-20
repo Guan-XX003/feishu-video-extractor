@@ -234,6 +234,16 @@ def test_production_settings_accept_valid_values(monkeypatch) -> None:
     asyncio.run(validate_production_settings())
 
 
+def test_expected_pack_ids_support_comma_separated_allowlist(monkeypatch) -> None:
+    monkeypatch.setattr(
+        main.settings,
+        "expected_pack_id",
+        "replit_account_a, replit_account_b,,",
+    )
+
+    assert main.settings.expected_pack_ids == {"replit_account_a", "replit_account_b"}
+
+
 def test_resolve_cookies_content(monkeypatch) -> None:
     monkeypatch.setattr(main.settings, "cookies_content", "# Netscape HTTP Cookie File\n")
     monkeypatch.setattr(main.settings, "cookies_file", "")

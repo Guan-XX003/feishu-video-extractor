@@ -14,6 +14,15 @@
 
 本地测试、打包和发布方法见 `field-shortcut/README.md`。
 
+如果要迁移到另一台电脑或交给另一个 Agent，请从以下文件开始：
+
+- `AGENTS.md`：Agent 必须遵守的安全、构建和发布规则；
+- `docs/AGENT_START_HERE.md`：可直接复制给新 Agent 的接管指令；
+- `SETUP_OTHER_DEVICE.md`：面向操作者的完整搭建说明；
+- `handoff/config.example.json`：不含密钥的环境配置工作表。
+
+执行 `./package-source.sh` 可同时生成不含 Cookie、Token、`.env`、依赖目录和构建产物的 ZIP/TAR.GZ 迁移包。
+
 ## 功能
 
 - 选择“分享链接”来源字段和“视频附件”目标字段
