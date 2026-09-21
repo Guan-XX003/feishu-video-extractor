@@ -40,9 +40,24 @@
 src/       飞书侧边栏前端（React + Vite + Base JS SDK）
 backend/   视频解析下载服务（FastAPI + yt-dlp）
 field-shortcut/ 飞书 FaaS 字段捷径
+mac-server/ macOS 本机服务、专用浏览器 Profile 和 Tunnel 配置
 ```
 
 ## 本地启动
+
+### 长期运行在一台 Mac 上（可替代 Railway）
+
+如果 Mac 可以长期开机，可以用 `mac-server/` 将 FastAPI、yt-dlp、FFmpeg
+和抖音浏览器登录状态全部留在本机，再通过 Cloudflare Tunnel
+提供固定的公网 HTTPS 地址：
+
+```bash
+./mac-server/install.sh
+./mac-server/status.sh
+```
+
+完整方法见 `mac-server/README.md`。该模式直接读取专用 Edge/Chrome
+Profile 中的最新 Cookie，不需要反复导出 `COOKIES_CONTENT`。
 
 ### 1. 启动后端
 

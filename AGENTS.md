@@ -9,6 +9,7 @@ This repository implements a Feishu/Lark Base field shortcut that converts suppo
 - `field-shortcut/`: Feishu field-shortcut server package.
 - `backend/`: FastAPI download, signature-validation, temporary-ticket, and file-serving backend.
 - `windows-worker/`: optional Windows downloader that uses a local browser profile.
+- `mac-server/`: macOS LaunchAgent and Cloudflare Tunnel files for replacing the cloud backend.
 - `src/`: legacy sidebar frontend; do not confuse it with the recommended field shortcut.
 
 Start migration work from `docs/AGENT_START_HERE.md` and use `handoff/config.example.json` as the non-secret configuration worksheet.
@@ -42,7 +43,7 @@ Before committing or packaging, run:
 7. Build and pack `field-shortcut/`.
 8. The user must publish/upload through the target Feishu account. Use asynchronous execution mode.
 9. Add the official `shortcut_id` to `EXPECTED_PACK_ID`. Multiple IDs are comma-separated.
-10. Export fresh Douyin cookies from the target user's browser and store them in backend secrets, or enable the Windows worker.
+10. Export fresh Douyin cookies into backend secrets, enable the Windows worker, or use the macOS browser-profile mode.
 11. Verify `/health`, one audio job, one video job under 30 MB, and an intentional invalid-link error.
 
 ## Canonical commands
@@ -66,6 +67,7 @@ Windows equivalents are provided as `.ps1` files where relevant.
 - `EXPECTED_PACK_ID` accepts one ID or a comma-separated allowlist.
 - Attachment output is limited to 30 MB by default.
 - Cookies must contain only Douyin-related domains and must never be version controlled.
+- A macOS local server may use `COOKIES_FROM_BROWSER` with a dedicated profile; it must run as the logged-in user who owns the Keychain entry.
 - A single Railway instance uses ephemeral local cache. Do not run multiple replicas unless `PREPARED_VIDEO_DIR` is shared or replaced with object storage.
 
 ## Validation and error mapping

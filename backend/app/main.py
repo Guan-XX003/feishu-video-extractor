@@ -46,6 +46,8 @@ class Settings(BaseSettings):
     prepared_video_dir: str = "/tmp/feishu-video-extractor-cache"
     cookies_file: str = ""
     cookies_content: str = ""
+    cookies_from_browser: str = ""
+    cookies_browser_profile: str = ""
     require_base_signature: bool = False
     expected_pack_id: str = ""
     worker_enabled: bool = False
@@ -131,6 +133,10 @@ async def validate_production_settings() -> None:
             raise RuntimeError("生产环境必须配置至少 32 个字符的 TICKET_SECRET")
     if settings.worker_enabled and len(settings.worker_token) < 32:
         raise RuntimeError("启用本地下载助手时必须配置至少 32 个字符的 WORKER_TOKEN")
+    if settings.cookies_from_browser:
+        supported_browsers = {"brave", "chrome", "chromium", "edge", "firefox", "safari", "vivaldi"}
+        if settings.cookies_from_browser.lower() not in supported_browsers:
+            raise RuntimeError("COOKIES_FROM_BROWSER 不是受支持的浏览器")
 
 
 def resolve_cookies_file() -> str:
@@ -140,6 +146,39 @@ def resolve_cookies_file() -> str:
         cookie_path.chmod(0o600)
         return str(cookie_path)
     return settings.cookies_file
+
+
+def resolve_cookie_options() -> dict[str, Any]:
+    """返回 yt-dlp Cookie 配置。
+
+    本机浏览器模式优先于静态 cookies.txt，避免旧的
+    COOKIES_CONTENT 残留值遮蔽 Mac 上已刷新的登录状态。
+    """
+    browser = settings.cookies_from_browser.strip().lower()
+    if browser:
+        profile: str | None = None
+        if settings.cookies_browser_profile.strip():
+            profile_path = Path(settings.cookies_browser_profile).expanduser().resolve()
+            if not profile_path.is_dir():
+                raise RuntimeError("配置的浏览器 Cookie Profile 目录不存在")
+            profile = str(profile_path)
+        return {"cookiesfrombrowser": (browser, profile, None, None)}
+
+    cookies_file = resolve_cookies_file()
+    if not cookies_file:
+        return {}
+    cookies_path = Path(cookies_file).expanduser()
+    if not cookies_path.is_file():
+        raise RuntimeError("配置的抖音 Cookie 文件不存在")
+    return {"cookiefile": str(cookies_path)}
+
+
+def cookie_source_name() -> str:
+    if settings.cookies_from_browser.strip():
+        return "browser"
+    if settings.cookies_content.strip() or settings.cookies_file.strip():
+        return "file"
+    return "none"
 
 
 class ExtractRequest(BaseModel):
@@ -456,13 +495,11 @@ def download_media(url: str, media_type: str = "video") -> tuple[Path, Path, str
     temp_dir = Path(tempfile.mkdtemp(prefix="feishu-video-"))
     max_bytes = settings.max_video_size_mb * 1024 * 1024
     options = build_download_options(temp_dir, media_type)
-    cookies_file = resolve_cookies_file()
-    if cookies_file:
-        cookies_path = Path(cookies_file).expanduser()
-        if not cookies_path.is_file():
-            shutil.rmtree(temp_dir, ignore_errors=True)
-            raise RuntimeError("配置的抖音 Cookie 文件不存在")
-        options["cookiefile"] = str(cookies_path)
+    try:
+        options.update(resolve_cookie_options())
+    except RuntimeError:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+        raise
 
     try:
         with YoutubeDL(options) as ydl:
@@ -484,7 +521,7 @@ def download_media(url: str, media_type: str = "video") -> tuple[Path, Path, str
 def download_error_detail(error: DownloadError) -> str:
     message = str(error)
     if "Fresh cookies" in message or "cookies" in message.lower():
-        return "抖音要求有效 Cookie。请在后端配置仅包含抖音域名的 COOKIES_FILE。"
+        return "抖音要求有效 Cookie。请在本机专用浏览器中重新登录抖音。"
     return "视频解析失败。请确认链接公开可访问，且不需要登录或 DRM 解密。"
 
 
@@ -618,6 +655,7 @@ async def health() -> dict[str, Any]:
         "max_video_size_mb": settings.max_video_size_mb,
         "max_audio_source_size_mb": settings.max_audio_source_size_mb,
         "allowed_domains": sorted(settings.domains),
+        "cookie_source": cookie_source_name(),
         "worker_enabled": settings.worker_enabled,
         "worker_online": bool(
             settings.worker_enabled

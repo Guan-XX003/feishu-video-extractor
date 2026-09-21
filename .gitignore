@@ -5,6 +5,7 @@ dist/
 backend/.venv/
 backend/.pytest_cache/
 backend/__pycache__/
+backend/**/__pycache__/
 backend/downloads/
 backend/cookies*.txt
 field-shortcut/output/
@@ -13,3 +14,4 @@ field-shortcut/output/
 *.tsbuildinfo
 release/
 handoff/config.local.json
+mac-server/*.local.yml

@@ -54,13 +54,13 @@ Agent 可以写代码、部署、设置普通变量和验证服务，但以下�
 ## 最小可用路径
 
 1. 填写 `handoff/config.example.json` 的非敏感字段，另存为本地文件；不要提交含账号信息的副本。
-2. 部署 `backend/` 到 Railway，设置 `backend/railway.env.example` 中的生产变量。
+2. 部署 `backend/` 到 Railway，或使用 `mac-server/` 安装到长期开机的 Mac。
 3. 访问 `https://后端域名/health`。
 4. 用 `scripts/set-backend-url.*` 写入字段捷径后端地址。
 5. 在 `field-shortcut/` 执行 `npm run build && npm run pack`。
 6. 在飞书发布字段捷径，选择异步执行模式。
 7. 将正式 `shortcut_id` 加到 Railway 的 `EXPECTED_PACK_ID`。
-8. 导出目标用户自己的抖音 Cookie，写入 Railway `COOKIES_CONTENT`。
+8. 云部署导出目标用户自己的抖音 Cookie；Mac 本机部署改用专用浏览器 Profile。
 9. 等待部署后测试音频、视频和错误提示。
 
 ## 完成交付标准

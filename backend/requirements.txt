@@ -1,7 +1,7 @@
 fastapi==0.115.6
 cryptography==46.0.3
 uvicorn[standard]==0.34.0
-yt-dlp==2025.10.14
+yt-dlp==2026.8.19
 pydantic-settings==2.7.1
 httpx==0.28.1
 imageio-ffmpeg==0.6.0

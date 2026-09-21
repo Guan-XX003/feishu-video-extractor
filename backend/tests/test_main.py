@@ -14,10 +14,12 @@ from app.main import (
     dispatch_worker_job,
     finish_worker_job,
     claim_worker_job,
+    cookie_source_name,
     is_allowed_host,
     is_local_worker_host,
     media_type_for_filename,
     read_download_ticket,
+    resolve_cookie_options,
     resolve_cookies_file,
     safe_filename,
     validate_production_settings,
@@ -33,6 +35,7 @@ def test_health() -> None:
     assert response.json()["ok"] is True
     assert response.json()["max_audio_source_size_mb"] == 500
     assert response.json()["worker_enabled"] is False
+    assert response.json()["cookie_source"] == "none"
 
 
 def test_domain_allowlist() -> None:
@@ -206,7 +209,7 @@ def test_rejects_invalid_ticket() -> None:
 
 def test_cookie_error_is_actionable() -> None:
     error = DownloadError("Fresh cookies (not necessarily logged in) are needed")
-    assert "COOKIES_FILE" in download_error_detail(error)
+    assert "浏览器" in download_error_detail(error)
 
 
 def test_production_settings_require_secret(monkeypatch) -> None:
@@ -245,6 +248,8 @@ def test_expected_pack_ids_support_comma_separated_allowlist(monkeypatch) -> Non
 
 
 def test_resolve_cookies_content(monkeypatch) -> None:
+    monkeypatch.setattr(main.settings, "cookies_from_browser", "")
+    monkeypatch.setattr(main.settings, "cookies_browser_profile", "")
     monkeypatch.setattr(main.settings, "cookies_content", "# Netscape HTTP Cookie File\n")
     monkeypatch.setattr(main.settings, "cookies_file", "")
 
@@ -254,3 +259,29 @@ def test_resolve_cookies_content(monkeypatch) -> None:
         assert resolved.stat().st_mode & 0o077 == 0
     finally:
         resolved.unlink(missing_ok=True)
+
+
+def test_browser_cookie_source_has_priority(tmp_path: Path, monkeypatch) -> None:
+    profile = tmp_path / "browser-profile" / "Default"
+    profile.mkdir(parents=True)
+    monkeypatch.setattr(main.settings, "cookies_from_browser", "edge")
+    monkeypatch.setattr(main.settings, "cookies_browser_profile", str(profile))
+    monkeypatch.setattr(main.settings, "cookies_content", "stale-cookie-content")
+    monkeypatch.setattr(main.settings, "cookies_file", "/missing/cookies.txt")
+
+    assert resolve_cookie_options() == {
+        "cookiesfrombrowser": ("edge", str(profile.resolve()), None, None)
+    }
+    assert cookie_source_name() == "browser"
+
+
+def test_browser_cookie_profile_must_exist(monkeypatch) -> None:
+    monkeypatch.setattr(main.settings, "cookies_from_browser", "chrome")
+    monkeypatch.setattr(main.settings, "cookies_browser_profile", "/missing/browser-profile")
+
+    try:
+        resolve_cookie_options()
+    except RuntimeError as error:
+        assert "Profile" in str(error)
+    else:
+        raise AssertionError("不存在的浏览器 Profile 应该被拒绝")

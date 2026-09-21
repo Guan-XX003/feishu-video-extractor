@@ -8,7 +8,7 @@
 - Node.js 20+（字段捷径打包）
 - Python 3.10+（本地测试；Windows 下载助手建议 Python 3.11+）
 - 一个有权限创建/发布字段捷径的飞书账号
-- 一个 Railway 账号，或其他可运行 Docker/FastAPI 的公网 HTTPS 主机
+- 一个 Railway 账号、其他可运行 Docker/FastAPI 的公网 HTTPS 主机，或一台可长期开机的 Mac
 - 该环境自己的抖音登录账号
 
 ## 第一步：复制源码
@@ -31,6 +31,19 @@
 Windows PowerShell 使用 `scripts/` 下的同名 `.ps1` 脚本。
 
 ## 第二步：部署后端
+
+### macOS 本机 + Cloudflare Tunnel（不需要 Railway）
+
+```bash
+./mac-server/install.sh
+./mac-server/status.sh
+```
+
+然后运行安装目录中的 `open-douyin-login.command`，在专用浏览器窗口
+登录抖音。使用具名 Cloudflare Tunnel 把固定域名路由到
+`http://127.0.0.1:8000`。不要把随机变化的 Quick Tunnel URL 用在正式插件中。
+
+细节见 `mac-server/README.md`。
 
 ### Railway CLI 方式
 
@@ -69,6 +82,10 @@ docker compose up --build -d
 生产环境必须把示例值替换为自己的密钥，并使用 HTTPS 反向代理。不要直接把后端开放成无鉴权公共下载接口。
 
 ## 第三步：配置抖音 Cookie
+
+如果使用 `mac-server/`，跳过 Cookie 导出：后端会在每次任务时直接
+读取专用浏览器 Profile 的最新登录状态。该 Mac 用户需保持登录，
+锁屏不影响，但系统不能休眠。
 
 1. 在当前电脑的 Chrome 或 Edge 登录自己的抖音账号。
 2. 运行：
