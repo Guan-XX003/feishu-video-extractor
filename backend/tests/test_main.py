@@ -9,6 +9,8 @@ from app.main import (
     WorkerResult,
     app,
     build_download_options,
+    browser_http_headers,
+    download_douyin_from_browser,
     create_download_ticket,
     download_error_detail,
     dispatch_worker_job,
@@ -19,10 +21,12 @@ from app.main import (
     is_local_worker_host,
     media_type_for_filename,
     read_download_ticket,
+    resolve_browser_target_url,
     resolve_cookie_options,
     resolve_cookies_file,
     safe_filename,
     validate_production_settings,
+    warm_browser_session,
 )
 
 
@@ -188,10 +192,12 @@ def test_audio_ticket_returns_audio_attachment(tmp_path: Path, monkeypatch) -> N
     assert download_response.headers["content-type"].startswith("audio/mp4")
 
 
-def test_audio_download_options_extract_m4a(tmp_path: Path) -> None:
+def test_audio_download_options_extract_m4a(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setattr(main.settings, "cookies_from_browser", "")
     options = build_download_options(tmp_path, "audio")
     assert options["format"] == "bestaudio/best"
     assert options["max_filesize"] == 500 * 1024 * 1024
+    assert options["noprogress"] is True
     assert "ffmpeg" in Path(options["ffmpeg_location"]).name
     assert options["postprocessors"] == [
         {
@@ -200,6 +206,98 @@ def test_audio_download_options_extract_m4a(tmp_path: Path) -> None:
             "preferredquality": "128",
         }
     ]
+
+
+def test_browser_headers_use_configured_user_agent(monkeypatch) -> None:
+    monkeypatch.setattr(main.settings, "cookies_from_browser", "edge")
+    monkeypatch.setattr(main.settings, "browser_user_agent", "test-edge-user-agent")
+
+    assert browser_http_headers("https://www.douyin.com/video/123") == {
+        "Referer": "https://www.douyin.com/",
+        "Accept-Language": "zh-CN,zh;q=0.9",
+        "User-Agent": "test-edge-user-agent",
+    }
+
+
+def test_browser_warmup_is_disabled_without_debug_url(monkeypatch) -> None:
+    monkeypatch.setattr(main.settings, "browser_debug_url", "")
+    assert warm_browser_session("https://www.douyin.com/video/123") is False
+
+
+def test_browser_warmup_opens_and_closes_target(monkeypatch) -> None:
+    requests: list[tuple[str, str]] = []
+    monkeypatch.setattr(main.settings, "browser_debug_url", "http://127.0.0.1:9222")
+    monkeypatch.setattr(main.settings, "browser_warmup_seconds", 0.0)
+    monkeypatch.setattr(main, "ensure_browser_debug_endpoint", lambda: True)
+    monkeypatch.setattr(main.time, "sleep", lambda _seconds: None)
+
+    def fake_request(path: str, method: str = "GET") -> dict[str, str]:
+        requests.append((path, method))
+        return {"id": "target-1"} if path.startswith("/json/new?") else {}
+
+    monkeypatch.setattr(main, "browser_debug_request", fake_request)
+    assert warm_browser_session("https://www.douyin.com/video/123") is True
+    assert requests[0][0].startswith("/json/new?https://www.douyin.com/video/123")
+    assert requests[0][1] == "PUT"
+    assert requests[1] == ("/json/close/target-1", "GET")
+
+
+def test_browser_target_url_leaves_canonical_url_unchanged() -> None:
+    url = "https://www.douyin.com/video/123"
+    assert resolve_browser_target_url(url) == url
+
+
+def test_browser_fallback_downloads_audio(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setattr(
+        main,
+        "browser_media_sources",
+        lambda _url: {
+            "title": "测试视频",
+            "resources": ["https://media.example.com/media-audio-und-mp4a/"],
+        },
+    )
+
+    def fake_download(_url: str, destination: Path, _max_bytes: int) -> None:
+        destination.write_bytes(b"source-audio")
+
+    def fake_ffmpeg(command: list[str], **_kwargs) -> None:
+        Path(command[-1]).write_bytes(b"converted-audio")
+
+    monkeypatch.setattr(main, "download_browser_resource", fake_download)
+    monkeypatch.setattr(main.subprocess, "run", fake_ffmpeg)
+    path, filename = download_douyin_from_browser(
+        "https://www.douyin.com/video/123", "audio", tmp_path
+    )
+    assert path.read_bytes() == b"converted-audio"
+    assert filename == "测试视频.m4a"
+
+
+def test_browser_fallback_merges_video_and_audio(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setattr(
+        main,
+        "browser_media_sources",
+        lambda _url: {
+            "title": "测试视频",
+            "resources": [
+                "https://media.example.com/media-video-avc1/",
+                "https://media.example.com/media-audio-und-mp4a/",
+            ],
+        },
+    )
+
+    def fake_download(_url: str, destination: Path, _max_bytes: int) -> None:
+        destination.write_bytes(b"source")
+
+    def fake_ffmpeg(command: list[str], **_kwargs) -> None:
+        Path(command[-1]).write_bytes(b"merged-video")
+
+    monkeypatch.setattr(main, "download_browser_resource", fake_download)
+    monkeypatch.setattr(main.subprocess, "run", fake_ffmpeg)
+    path, filename = download_douyin_from_browser(
+        "https://www.douyin.com/video/123", "video", tmp_path
+    )
+    assert path.read_bytes() == b"merged-video"
+    assert filename == "测试视频.mp4"
 
 
 def test_rejects_invalid_ticket() -> None:

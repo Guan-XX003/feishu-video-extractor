@@ -37,9 +37,12 @@ Open:
 open "$HOME/Library/Application Support/FeishuVideoExtractor/open-douyin-login.command"
 ```
 
-Log in inside this dedicated browser window, then close that dedicated window.
-The backend reads cookies from this profile at download time, so there is no
-Railway cookie environment variable to refresh.
+Log in inside this dedicated browser window. You can leave it open or close it;
+the backend starts the dedicated browser invisibly in headless mode when needed.
+It uses a debugging port bound only to `127.0.0.1` to load a blocked Douyin page
+in the background and refresh the dynamic anti-bot cookies. Normal downloads do
+not open browser windows or tabs. The backend reads cookies from this profile at
+download time, so there is no Railway cookie environment variable to refresh.
 
 ## Add a stable public URL
 

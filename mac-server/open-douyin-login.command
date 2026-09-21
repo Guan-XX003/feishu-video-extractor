@@ -23,7 +23,8 @@ open -na "$APP_NAME" --args \
   --user-data-dir="$PROFILE_ROOT" \
   --profile-directory=Default \
   --no-first-run \
+  --remote-debugging-address=127.0.0.1 \
+  --remote-debugging-port=9222 \
   https://www.douyin.com/
 
 printf '%s\n' "A dedicated $APP_NAME window was opened. Log in to Douyin there, then close that dedicated window."
-

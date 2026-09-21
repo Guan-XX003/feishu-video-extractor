@@ -12,12 +12,18 @@ import os
 import re
 import secrets
 import shutil
+import subprocess
+import sys
 import tempfile
+import threading
 import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal, Optional, Union
-from urllib.parse import urlparse
+from urllib.error import URLError
+from urllib.parse import quote, urlparse
+from urllib.request import Request as UrlRequest
+from urllib.request import urlopen
 
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives import hashes, serialization
@@ -31,6 +37,7 @@ from pydantic import BaseModel, HttpUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from yt_dlp import YoutubeDL
 from yt_dlp.utils import DownloadError
+from websockets.sync.client import connect as websocket_connect
 
 
 class Settings(BaseSettings):
@@ -48,6 +55,9 @@ class Settings(BaseSettings):
     cookies_content: str = ""
     cookies_from_browser: str = ""
     cookies_browser_profile: str = ""
+    browser_user_agent: str = ""
+    browser_debug_url: str = ""
+    browser_warmup_seconds: float = 3.0
     require_base_signature: bool = False
     expected_pack_id: str = ""
     worker_enabled: bool = False
@@ -81,6 +91,7 @@ class Settings(BaseSettings):
 
 settings = Settings()
 download_semaphore = asyncio.Semaphore(max(1, settings.download_concurrency))
+browser_warm_lock = threading.Lock()
 logger = logging.getLogger("feishu_video_extractor")
 
 
@@ -137,6 +148,10 @@ async def validate_production_settings() -> None:
         supported_browsers = {"brave", "chrome", "chromium", "edge", "firefox", "safari", "vivaldi"}
         if settings.cookies_from_browser.lower() not in supported_browsers:
             raise RuntimeError("COOKIES_FROM_BROWSER 不是受支持的浏览器")
+    if settings.browser_debug_url:
+        debug_url = urlparse(settings.browser_debug_url)
+        if debug_url.scheme != "http" or debug_url.hostname not in {"127.0.0.1", "localhost"}:
+            raise RuntimeError("BROWSER_DEBUG_URL 必须是本机 HTTP 地址")
 
 
 def resolve_cookies_file() -> str:
@@ -179,6 +194,317 @@ def cookie_source_name() -> str:
     if settings.cookies_content.strip() or settings.cookies_file.strip():
         return "file"
     return "none"
+
+
+def browser_http_headers(url: str = "") -> dict[str, str]:
+    browser = settings.cookies_from_browser.strip().lower()
+    if not browser:
+        return {}
+
+    user_agent = settings.browser_user_agent.strip()
+    if not user_agent and sys.platform == "darwin":
+        browser_binaries = {
+            "edge": Path("/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge"),
+            "chrome": Path("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"),
+        }
+        binary = browser_binaries.get(browser)
+        if binary and binary.is_file():
+            try:
+                result = subprocess.run(
+                    [str(binary), "--version"],
+                    capture_output=True,
+                    text=True,
+                    timeout=5,
+                    check=True,
+                )
+                match = re.search(r"(\d+(?:\.\d+){3})", result.stdout)
+                if match:
+                    version = match.group(1)
+                    product = f" Edg/{version}" if browser == "edge" else ""
+                    user_agent = (
+                        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                        f"AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{version} "
+                        f"Safari/537.36{product}"
+                    )
+            except (OSError, subprocess.SubprocessError):
+                logger.warning("browser_version_detection_failed browser=%s", browser)
+
+    headers: dict[str, str] = {}
+    hostname = (urlparse(url).hostname or "").lower()
+    if hostname == "douyin.com" or hostname.endswith(".douyin.com"):
+        headers.update(
+            {
+                "Referer": "https://www.douyin.com/",
+                "Accept-Language": "zh-CN,zh;q=0.9",
+            }
+        )
+    if user_agent:
+        headers["User-Agent"] = user_agent
+    return headers
+
+
+def browser_binary_path(browser: str) -> Path | None:
+    if sys.platform != "darwin":
+        return None
+    return {
+        "edge": Path("/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge"),
+        "chrome": Path("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"),
+    }.get(browser)
+
+
+def browser_debug_request(path: str, method: str = "GET") -> Any:
+    base_url = settings.browser_debug_url.strip().rstrip("/")
+    if not base_url:
+        raise RuntimeError("未配置浏览器调试地址")
+    request = UrlRequest(f"{base_url}{path}", method=method)
+    with urlopen(request, timeout=5) as response:
+        return json.load(response)
+
+
+def browser_debug_evaluate(websocket_url: str, expression: str) -> Any:
+    last_error: Exception | None = None
+    for _ in range(3):
+        try:
+            with websocket_connect(
+                websocket_url, origin=None, open_timeout=5, close_timeout=2
+            ) as websocket:
+                websocket.send(
+                    json.dumps(
+                        {
+                            "id": 1,
+                            "method": "Runtime.evaluate",
+                            "params": {"expression": expression, "returnByValue": True},
+                        }
+                    )
+                )
+                response = json.loads(websocket.recv(timeout=5))
+            return response.get("result", {}).get("result", {}).get("value")
+        except Exception as error:
+            last_error = error
+            time.sleep(0.25)
+    raise RuntimeError("无法读取专用浏览器页面") from last_error
+
+
+def resolve_browser_target_url(url: str) -> str:
+    hostname = (urlparse(url).hostname or "").lower()
+    if hostname != "v.douyin.com":
+        return url
+    request = UrlRequest(url, headers=browser_http_headers("https://www.douyin.com/"))
+    try:
+        with urlopen(request, timeout=10) as response:
+            resolved = response.geturl()
+        if (urlparse(resolved).hostname or "").lower().endswith("douyin.com"):
+            return resolved
+    except (OSError, URLError, ValueError):
+        pass
+    return url
+
+
+def ensure_browser_debug_endpoint() -> bool:
+    if not settings.browser_debug_url.strip():
+        return False
+    try:
+        browser_debug_request("/json/version")
+        return True
+    except (OSError, RuntimeError, URLError, ValueError, json.JSONDecodeError):
+        pass
+
+    browser = settings.cookies_from_browser.strip().lower()
+    binary = browser_binary_path(browser)
+    profile = settings.cookies_browser_profile.strip()
+    if not binary or not binary.is_file() or not profile:
+        return False
+
+    debug_url = urlparse(settings.browser_debug_url)
+    if not debug_url.port:
+        return False
+    profile_path = Path(profile).expanduser().resolve()
+    profile_root = profile_path.parent if profile_path.name == "Default" else profile_path
+    try:
+        subprocess.Popen(
+            [
+                str(binary),
+                f"--user-data-dir={profile_root}",
+                f"--profile-directory={profile_path.name}",
+                "--no-first-run",
+                "--headless=new",
+                "--disable-gpu",
+                f"--remote-debugging-address={debug_url.hostname}",
+                f"--remote-debugging-port={debug_url.port}",
+                "about:blank",
+            ],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            start_new_session=True,
+        )
+    except OSError:
+        logger.warning("browser_debug_launch_failed browser=%s", browser)
+        return False
+
+    for _ in range(20):
+        time.sleep(0.25)
+        try:
+            browser_debug_request("/json/version")
+            return True
+        except (OSError, RuntimeError, URLError, ValueError, json.JSONDecodeError):
+            continue
+    return False
+
+
+def warm_browser_session(url: str) -> bool:
+    """让专用浏览器访问目标页，刷新抖音的动态风控 Cookie。"""
+    if not settings.browser_debug_url.strip():
+        return False
+    with browser_warm_lock:
+        if not ensure_browser_debug_endpoint():
+            logger.warning("browser_warmup_unavailable")
+            return False
+        target_id = ""
+        try:
+            target = browser_debug_request(f"/json/new?{quote(url, safe=':/?=&')}", method="PUT")
+            target_id = str(target.get("id") or "") if isinstance(target, dict) else ""
+            time.sleep(max(0.5, settings.browser_warmup_seconds))
+            logger.info("browser_warmup_complete host=%s", urlparse(url).hostname or "")
+            return True
+        except (OSError, RuntimeError, URLError, ValueError, json.JSONDecodeError):
+            logger.warning("browser_warmup_failed host=%s", urlparse(url).hostname or "")
+            return False
+        finally:
+            if target_id:
+                try:
+                    browser_debug_request(f"/json/close/{target_id}")
+                except (OSError, RuntimeError, URLError, ValueError, json.JSONDecodeError):
+                    pass
+
+
+def browser_media_sources(url: str) -> dict[str, Any]:
+    """从专用浏览器已通过风控的页面读取实际媒体地址。"""
+    if not settings.browser_debug_url.strip():
+        raise RuntimeError("未配置浏览器回退通道")
+    with browser_warm_lock:
+        if not ensure_browser_debug_endpoint():
+            raise RuntimeError("专用浏览器不可用")
+        target_id = ""
+        try:
+            target_url = resolve_browser_target_url(url)
+            target = browser_debug_request(
+                f"/json/new?{quote(target_url, safe=':/?=&')}", method="PUT"
+            )
+            if not isinstance(target, dict) or not target.get("webSocketDebuggerUrl"):
+                raise RuntimeError("无法连接专用浏览器页面")
+            target_id = str(target.get("id") or "")
+            expression = """JSON.stringify({
+                title: document.title.replace(/\\s+-\\s+抖音$/, ''),
+                currentSrc: document.querySelector('video')?.currentSrc || '',
+                resources: performance.getEntriesByType('resource')
+                    .map(entry => entry.name)
+                    .filter(name => name.includes('douyinvod.com'))
+            })"""
+            deadline = time.monotonic() + max(5.0, settings.browser_warmup_seconds + 7.0)
+            while time.monotonic() < deadline:
+                value = browser_debug_evaluate(str(target["webSocketDebuggerUrl"]), expression)
+                payload = json.loads(value) if isinstance(value, str) else {}
+                if isinstance(payload, dict):
+                    resources = unique_urls(payload.get("resources"))
+                    has_dash = any("media-video-" in item for item in resources) and any(
+                        "media-audio-" in item for item in resources
+                    )
+                    if has_dash or str(payload.get("currentSrc") or "").startswith("https://"):
+                        return payload
+                time.sleep(0.5)
+            raise RuntimeError("专用浏览器页面未加载出媒体资源")
+        finally:
+            if target_id:
+                try:
+                    browser_debug_request(f"/json/close/{target_id}")
+                except (OSError, RuntimeError, URLError, ValueError, json.JSONDecodeError):
+                    pass
+
+
+def unique_urls(values: Any) -> list[str]:
+    if not isinstance(values, list):
+        return []
+    seen: set[str] = set()
+    result: list[str] = []
+    for value in values:
+        if isinstance(value, str) and value.startswith("https://") and value not in seen:
+            seen.add(value)
+            result.append(value)
+    return result
+
+
+def download_browser_resource(url: str, destination: Path, max_bytes: int) -> None:
+    headers = browser_http_headers("https://www.douyin.com/")
+    headers["Referer"] = "https://www.douyin.com/"
+    request = UrlRequest(url, headers=headers)
+    total = 0
+    with urlopen(request, timeout=30) as response, destination.open("wb") as output:
+        content_length = int(response.headers.get("Content-Length") or 0)
+        if content_length and content_length > max_bytes:
+            raise RuntimeError("浏览器媒体源超过大小限制")
+        while chunk := response.read(1024 * 1024):
+            total += len(chunk)
+            if total > max_bytes:
+                raise RuntimeError("浏览器媒体源超过大小限制")
+            output.write(chunk)
+
+
+def download_douyin_from_browser(
+    url: str, media_type: str, temp_dir: Path
+) -> tuple[Path, str]:
+    payload = browser_media_sources(url)
+    resources = unique_urls(payload.get("resources"))
+    video_urls = [item for item in resources if "media-video-" in item]
+    audio_urls = [item for item in resources if "media-audio-" in item]
+    current_src = str(payload.get("currentSrc") or "")
+    title = safe_filename(payload.get("title"), fallback="douyin-video")
+    final_limit = settings.max_video_size_mb * 1024 * 1024
+
+    if media_type == "audio":
+        if not audio_urls:
+            raise RuntimeError("浏览器页面未找到音频流")
+        source = temp_dir / "browser-audio-source.mp4"
+        output = temp_dir / "browser-audio.m4a"
+        download_browser_resource(
+            audio_urls[-1], source, settings.max_audio_source_size_mb * 1024 * 1024
+        )
+        subprocess.run(
+            [
+                get_ffmpeg_exe(), "-y", "-loglevel", "error", "-i", str(source),
+                "-vn", "-c:a", "aac", "-b:a", "128k", str(output),
+            ],
+            capture_output=True,
+            check=True,
+        )
+        if output.stat().st_size > final_limit:
+            raise RuntimeError(f"音频超过 {settings.max_video_size_mb} MB 限制")
+        return output, f"{title}.m4a"
+
+    if video_urls and audio_urls:
+        video_source = temp_dir / "browser-video-source.mp4"
+        audio_source = temp_dir / "browser-audio-source.m4a"
+        output = temp_dir / "browser-video.mp4"
+        download_browser_resource(video_urls[-1], video_source, final_limit)
+        download_browser_resource(audio_urls[-1], audio_source, final_limit)
+        subprocess.run(
+            [
+                get_ffmpeg_exe(), "-y", "-loglevel", "error",
+                "-i", str(video_source), "-i", str(audio_source),
+                "-map", "0:v:0", "-map", "1:a:0", "-c", "copy", str(output),
+            ],
+            capture_output=True,
+            check=True,
+        )
+    elif current_src.startswith("https://"):
+        output = temp_dir / "browser-video.mp4"
+        download_browser_resource(current_src, output, final_limit)
+    else:
+        raise RuntimeError("浏览器页面未找到视频流")
+
+    if output.stat().st_size > final_limit:
+        raise RuntimeError(f"视频超过 {settings.max_video_size_mb} MB 限制")
+    return output, f"{title}.mp4"
 
 
 class ExtractRequest(BaseModel):
@@ -477,6 +803,7 @@ def build_download_options(temp_dir: Path, media_type: str) -> dict[str, Any]:
         "fragment_retries": 2,
         "quiet": True,
         "no_warnings": True,
+        "noprogress": True,
         "restrictfilenames": True,
     }
     if media_type == "audio":
@@ -494,16 +821,45 @@ def build_download_options(temp_dir: Path, media_type: str) -> dict[str, Any]:
 def download_media(url: str, media_type: str = "video") -> tuple[Path, Path, str]:
     temp_dir = Path(tempfile.mkdtemp(prefix="feishu-video-"))
     max_bytes = settings.max_video_size_mb * 1024 * 1024
-    options = build_download_options(temp_dir, media_type)
-    try:
-        options.update(resolve_cookie_options())
-    except RuntimeError:
-        shutil.rmtree(temp_dir, ignore_errors=True)
-        raise
+    hostname = (urlparse(url).hostname or "").lower()
+    is_douyin = hostname == "douyin.com" or hostname.endswith(".douyin.com")
+    if is_douyin and settings.browser_debug_url.strip():
+        try:
+            file_path, filename = download_douyin_from_browser(url, media_type, temp_dir)
+            return file_path, temp_dir, filename
+        except Exception as error:
+            logger.warning(
+                "douyin_browser_primary_failed media_type=%s detail=%s",
+                media_type,
+                str(error),
+            )
+            shutil.rmtree(temp_dir, ignore_errors=True)
+            temp_dir.mkdir(parents=True, exist_ok=True)
+    max_attempts = 3 if is_douyin and settings.cookies_from_browser.strip() else 1
 
     try:
-        with YoutubeDL(options) as ydl:
-            info = ydl.extract_info(url, download=True)
+        info: Any = None
+        for attempt in range(1, max_attempts + 1):
+            options = build_download_options(temp_dir, media_type)
+            headers = browser_http_headers(url)
+            if headers:
+                options["http_headers"] = headers
+            options.update(resolve_cookie_options())
+            try:
+                with YoutubeDL(options) as ydl:
+                    info = ydl.extract_info(url, download=True)
+                break
+            except DownloadError as error:
+                message = str(error).lower()
+                retryable = "fresh cookies" in message or "403" in message
+                if not retryable or attempt >= max_attempts:
+                    raise
+                logger.warning("douyin_download_retry attempt=%s/%s", attempt, max_attempts)
+                shutil.rmtree(temp_dir, ignore_errors=True)
+                temp_dir.mkdir(parents=True, exist_ok=True)
+                if not warm_browser_session(url):
+                    time.sleep(attempt)
+
         if not isinstance(info, dict):
             raise RuntimeError("媒体解析结果无效")
         file_path = locate_download(info, temp_dir, media_type)
