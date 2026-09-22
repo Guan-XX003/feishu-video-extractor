@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { FieldCode } from '@lark-opdev/block-basekit-server-api';
-import basekit, { extractFirstUrl, normalizeMediaType } from '../src';
+import basekit, { BUILD_VERSION, extractFirstUrl, normalizeMediaType } from '../src';
+
+assert.equal(BUILD_VERSION, '0.1.4-20260922');
 
 assert.equal(
   extractFirstUrl([{ type: 'text', text: '复制打开 https://v.douyin.com/demo/ 查看视频' }]),
@@ -79,6 +81,36 @@ async function run() {
   });
   assert.equal(requestBody?.media_type, 'audio');
   assert.equal(requestBody?.log_id, 'log-demo');
+
+  let unsignedFetchCalled = false;
+  const missingSignature = await field.execute(
+    {
+      source: [{ type: 'url', link: 'https://v.douyin.com/demo/' }],
+      mediaType: 'video',
+    },
+    {
+      baseSignature: '',
+      baseID: 'base-demo',
+      tableID: 'table-demo',
+      packID: 'pack-demo',
+      tenantKey: 'tenant-demo',
+      logID: 'log-missing-signature',
+      token: '',
+      timeZone: 'Asia/Shanghai',
+      baseOwnerID: 'owner-demo',
+      isNeedPayPack: false,
+      hasQuota: true,
+      fetch: async () => {
+        unsignedFetchCalled = true;
+        throw new Error('fetch should not run');
+      },
+    },
+  );
+  assert.equal(unsignedFetchCalled, false);
+  assert.deepEqual(missingSignature, {
+    code: FieldCode.AuthorizationError,
+    msg: `字段捷径运行环境缺少签名信息（版本 ${BUILD_VERSION}）`,
+  });
 
   const mediaModeItem = field.formItems.find((item) => item.key === 'mediaType');
   assert.equal(mediaModeItem?.defaultValue, 'video');

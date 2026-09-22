@@ -26,6 +26,8 @@ type TicketResponse = {
 
 type MediaType = 'video' | 'audio';
 
+export const BUILD_VERSION = '0.1.4-20260922';
+
 const supportedVideoDomains = [
   'douyin.com',
   'iesdouyin.com',
@@ -108,17 +110,39 @@ async function createTicket(
   mediaType: MediaType,
   context: FieldContext,
 ): Promise<TicketResponse> {
-  const response = await context.fetch(`${BACKEND_URL}/api/tickets`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      url,
-      media_type: mediaType,
-      base_signature: context.baseSignature,
-      pack_id: context.packID,
-      log_id: context.logID,
-    }),
-  });
+  if (!context.baseSignature || !context.packID) {
+    throw new BackendRequestError(
+      `字段捷径运行环境缺少签名信息（版本 ${BUILD_VERSION}）`,
+      401,
+    );
+  }
+
+  console.log(JSON.stringify({
+    event: 'backend_request_start',
+    buildVersion: BUILD_VERSION,
+    backendHost,
+    logID: context.logID,
+    packID: context.packID,
+    hasBaseSignature: true,
+  }));
+
+  let response: Awaited<ReturnType<FieldContext['fetch']>>;
+  try {
+    response = await context.fetch(`${BACKEND_URL}/api/tickets`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        url,
+        media_type: mediaType,
+        base_signature: context.baseSignature,
+        pack_id: context.packID,
+        log_id: context.logID,
+      }),
+    });
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : String(error);
+    throw new Error(`请求视频服务失败（版本 ${BUILD_VERSION}）：${detail}`);
+  }
   const text = await response.text();
   let payload: Partial<TicketResponse> & { detail?: string } = {};
   try {
@@ -200,6 +224,7 @@ basekit.addField({
 
       const mediaType = normalizeMediaType(formItemParams.mediaType);
       console.log(JSON.stringify({
+        buildVersion: BUILD_VERSION,
         logID: context.logID,
         mediaTypeInput: formItemParams.mediaType,
         mediaType,
@@ -217,6 +242,7 @@ basekit.addField({
       };
     } catch (error) {
       console.log(JSON.stringify({
+        buildVersion: BUILD_VERSION,
         logID: context.logID,
         error: error instanceof Error ? error.message : String(error),
       }));
