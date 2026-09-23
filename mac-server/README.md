@@ -61,6 +61,12 @@ After the tunnel hostname is ready:
 Then rebuild and publish one new field-shortcut version. Future backend moves
 can keep the same hostname and will not require another shortcut release.
 
+The tunnel installer also runs a silent health check every two minutes. When
+the local backend is healthy but the tunnel is disconnected or its public
+health URL is unavailable, it restarts only the `com.growing.feishu-video-tunnel`
+LaunchAgent. Restarts are limited to once every five minutes. Diagnostic logs
+are stored in `~/Library/Application Support/FeishuVideoExtractor/logs/`.
+
 ## Availability requirements
 
 - Keep the Mac connected to power and prevent idle system sleep.
