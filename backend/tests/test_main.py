@@ -203,7 +203,7 @@ def test_audio_download_options_extract_m4a(tmp_path: Path, monkeypatch) -> None
         {
             "key": "FFmpegExtractAudio",
             "preferredcodec": "m4a",
-            "preferredquality": "128",
+            "preferredquality": "32",
         }
     ]
 
@@ -261,6 +261,8 @@ def test_browser_fallback_downloads_audio(tmp_path: Path, monkeypatch) -> None:
         destination.write_bytes(b"source-audio")
 
     def fake_ffmpeg(command: list[str], **_kwargs) -> None:
+        assert command[command.index("-b:a") + 1] == "32k"
+        assert command[command.index("-ac") + 1] == "1"
         Path(command[-1]).write_bytes(b"converted-audio")
 
     monkeypatch.setattr(main, "download_browser_resource", fake_download)

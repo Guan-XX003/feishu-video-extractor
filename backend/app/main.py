@@ -93,6 +93,7 @@ settings = Settings()
 download_semaphore = asyncio.Semaphore(max(1, settings.download_concurrency))
 browser_warm_lock = threading.Lock()
 logger = logging.getLogger("feishu_video_extractor")
+AUDIO_BITRATE_KBPS = 32
 
 
 @dataclass
@@ -472,7 +473,7 @@ def download_douyin_from_browser(
         subprocess.run(
             [
                 get_ffmpeg_exe(), "-y", "-loglevel", "error", "-i", str(source),
-                "-vn", "-c:a", "aac", "-b:a", "128k", str(output),
+                "-vn", "-ac", "1", "-c:a", "aac", "-b:a", f"{AUDIO_BITRATE_KBPS}k", str(output),
             ],
             capture_output=True,
             check=True,
@@ -812,7 +813,7 @@ def build_download_options(temp_dir: Path, media_type: str) -> dict[str, Any]:
             {
                 "key": "FFmpegExtractAudio",
                 "preferredcodec": "m4a",
-                "preferredquality": "128",
+                "preferredquality": str(AUDIO_BITRATE_KBPS),
             }
         ]
     return options
