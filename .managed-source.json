@@ -1,0 +1,309 @@
+{
+  "schema": 1,
+  "thread_id": "01a01895-290d-7f23-bcb4-c79119dc7629",
+  "sources": [
+    {
+      "source": "/Users/growing-1/Documents/ChatGPT/sql表/feishu-video-extractor",
+      "destination": ".",
+      "files": 73
+    }
+  ],
+  "files": {
+    ".env.example": {
+      "sha256": "b3b1d1c09171b8dc380a75033c5d84f54dc6d3139a58c925447d38d2fe3c7eb2",
+      "mode": 420
+    },
+    ".gitignore": {
+      "sha256": "1a69af9efb5ca870b71747637894c5de9fdd44723719dc36b8b80c059f26e927",
+      "mode": 420
+    },
+    "AGENTS.md": {
+      "sha256": "cd6c8cbccb63aa1d1758175de898d0607514840251d7d0d846becd108634614f",
+      "mode": 420
+    },
+    "MANAGEMENT.md": {
+      "sha256": "f4c4ab440bc5a9ff2693b1d6cf17a46a1fc4975c6ee3deaf29ee9ad18dc221e4",
+      "mode": 420
+    },
+    "README.md": {
+      "sha256": "cea705ea46238d92dc0341a39de94587c38d392a188ac91dfd1c1b1db1cd3cbf",
+      "mode": 420
+    },
+    "SETUP_OTHER_DEVICE.md": {
+      "sha256": "0cd35e641a8970ea357b6cc8f16374d687a17be73d35afb84999baf7cfb1f4a5",
+      "mode": 420
+    },
+    "backend/.dockerignore": {
+      "sha256": "063cf60d9d90ad0a6e752d937542835ead021fc5ad6e1b48988e25df3bea0c04",
+      "mode": 420
+    },
+    "backend/.env.example": {
+      "sha256": "5505e37e5f289748c0d9174008373497e8d6c809c00300f6d6bbec2e7cd54004",
+      "mode": 420
+    },
+    "backend/Dockerfile": {
+      "sha256": "eface49fd1f7356f7da52d653b67b13c48c63f07f02a2397794e038430ef5f2a",
+      "mode": 420
+    },
+    "backend/app/__init__.py": {
+      "sha256": "8fd2c40b2ca7e7dec69a4aaf0f40b61ed6f4983d0026efa4f3697113e1c2d508",
+      "mode": 420
+    },
+    "backend/app/main.py": {
+      "sha256": "2dd20bcc74180d79d8e93caa2524fdf21632205f0208a60a8895fa664b18b523",
+      "mode": 420
+    },
+    "backend/export_douyin_cookies.sh": {
+      "sha256": "70eefd0486b4b2f81112edd36c32aac6fb0ac0f0935e0c71d505466aebb70cf5",
+      "mode": 493
+    },
+    "backend/railway.env.example": {
+      "sha256": "435d72b84705c0bb99051989dda2f889930a632f55e512b056bf53326bab4125",
+      "mode": 420
+    },
+    "backend/railway.toml": {
+      "sha256": "4f3d690e59a9a6b5537ea8c23df04bfbb55b68ad5e9b2211a1d6d3e62d983bb2",
+      "mode": 420
+    },
+    "backend/requirements.txt": {
+      "sha256": "635fae8a428c5525e4f22f8f26aa9ab3faac28270de1cd39a0d2181046379efa",
+      "mode": 420
+    },
+    "backend/tests/test_main.py": {
+      "sha256": "2e79957e95222f03a74d60ffcfcbe58c9798fdd378f3ecc3f1fdf400ef71f885",
+      "mode": 420
+    },
+    "docker-compose.yml": {
+      "sha256": "9d2e1eadc94f453c84b42a7b51e1dad78a49c4c34f9bb727decba8167d2a3820",
+      "mode": 420
+    },
+    "docs/AGENT_START_HERE.md": {
+      "sha256": "43c6f3e3fe1ff389d1ff80bf7d81f08e5255a1d23c067cd04fa7f6690381cdd6",
+      "mode": 420
+    },
+    "docs/browser-before.png": {
+      "sha256": "6a2e557cc3a1ebcbb11d2f67e6fbfdcc5d149c30e0f1bbb904c9847d749acf61",
+      "mode": 420
+    },
+    "docs/browser-result.png": {
+      "sha256": "423c30d8670f4c97cd28dbd64d5b97594f7ceef44c6debda014627c6683a79e6",
+      "mode": 420
+    },
+    "docs/design-concept.png": {
+      "sha256": "8cad7a997acc038b8b23b56bf69126b0fcc9b5d50c400bad58f326e6c69d9b99",
+      "mode": 420
+    },
+    "field-shortcut/README.md": {
+      "sha256": "1c5d9ff918271d6e0f9ee05f75ef03ea0db59f0e535140be831ddcef50c75257",
+      "mode": 420
+    },
+    "field-shortcut/assets/changqing-video-downloader-icon-1024.png": {
+      "sha256": "a93f8cb50ff6aa453204560652fdb53e4fefd2c9b06851ae6a3bf552b165dd54",
+      "mode": 420
+    },
+    "field-shortcut/assets/changqing-video-downloader-icon-2048.png": {
+      "sha256": "0a1adba33347c5852b019baf9b89cdf116f6021b63b783a2ff8bbe78d9403c58",
+      "mode": 420
+    },
+    "field-shortcut/assets/changqing-video-downloader-icon-256.png": {
+      "sha256": "35e2e705588d4273bfff145c251e36089ed11733b47215e4cb7e178ebb3432d0",
+      "mode": 420
+    },
+    "field-shortcut/assets/changqing-video-downloader-icon-512.png": {
+      "sha256": "67ee8da80f2be537522b29a6e1f58e905656e2bd94b4e642d38b752ce6864395",
+      "mode": 420
+    },
+    "field-shortcut/config.json": {
+      "sha256": "c57efe814d6a846ff2ee547dfba9efba1cf81425f9a0264e4a9eedd46e13a237",
+      "mode": 420
+    },
+    "field-shortcut/package-lock.json": {
+      "sha256": "78d4053dfae749f4016176d23d662d2abdfda13375027c4cdad5e1a7db4e122b",
+      "mode": 420
+    },
+    "field-shortcut/package.json": {
+      "sha256": "d0ca82c3a7658a1ceccd939887abe4924f4f5f4fb59433cae1c996a51411d98a",
+      "mode": 420
+    },
+    "field-shortcut/scripts/check-config.mjs": {
+      "sha256": "8308eeca9f97319d3b66a3ef56d4cb015d5572e57b6fe6d3584653f78df6c49b",
+      "mode": 420
+    },
+    "field-shortcut/src/config.ts": {
+      "sha256": "7e7634ecf9c808fb228cca34eb9667e96d32979efb50596f1eb1e1a82b34e709",
+      "mode": 420
+    },
+    "field-shortcut/src/index.ts": {
+      "sha256": "8eb06dedc45042b44c601fe6bfe6cb90de74a86fc17082e21aeaff446b763d99",
+      "mode": 420
+    },
+    "field-shortcut/test/index.ts": {
+      "sha256": "a22488735a2bb19c77bfb15c3b9108fe7b38234086211bce47064926bf698a88",
+      "mode": 420
+    },
+    "field-shortcut/tsconfig.json": {
+      "sha256": "11cf050d3c15a22d4489338bed1fb77696993ff04628d55d78e68c21937fbcb8",
+      "mode": 420
+    },
+    "handoff/config.example.json": {
+      "sha256": "048a6569c89d93ebbc2c35c9cef4e4323a187b68a78cae8f5e6c4af5ca067cfc",
+      "mode": 420
+    },
+    "index.html": {
+      "sha256": "1960c94551d11213cd606024d53321447295ed6465c8de4fa42734bc34f401b4",
+      "mode": 420
+    },
+    "mac-server/README.md": {
+      "sha256": "6e9074c217e980eb2601cf67bffa88e308b58ab2263c0fdc76925489447427c5",
+      "mode": 420
+    },
+    "mac-server/check-tunnel.sh": {
+      "sha256": "362681c106fc09b6776f21a2e9f4284dc60f1797c1a8b43cec4a8f645258cf6d",
+      "mode": 493
+    },
+    "mac-server/cloudflared-config.example.yml": {
+      "sha256": "c9dcb4f39da4b940b68e4595e6f9c18233925289c6eb811fbd05aca7d1bbc119",
+      "mode": 420
+    },
+    "mac-server/install-cloudflare-tunnel.sh": {
+      "sha256": "cd8cb3ad993edd614a9533f45e664a377898569c232c32258ac84f93e17323e6",
+      "mode": 493
+    },
+    "mac-server/install.sh": {
+      "sha256": "9460dd8eea7cbd9a909b7e70cb2b61bb7087afb69b482b1b8364b1ac29182d42",
+      "mode": 493
+    },
+    "mac-server/open-douyin-login.command": {
+      "sha256": "491860cbc0236155eb7cd75ee5fd276457e1d38855ac0e9f6b9ca20b676df51d",
+      "mode": 493
+    },
+    "mac-server/run-backend.sh": {
+      "sha256": "c5dbc89bba046a901bbf54da056e0f6248a9d0e0f602a6210c640d6ec3f654d7",
+      "mode": 493
+    },
+    "mac-server/set-public-url.sh": {
+      "sha256": "e5de612243a9697ad92dd0034a6129f54f50f46586e7f84ce79b20cb3953b670",
+      "mode": 493
+    },
+    "mac-server/status.sh": {
+      "sha256": "3ff2599f1fc2632769249d28e6fe442548199caaacf01c20f79f65788430467f",
+      "mode": 493
+    },
+    "package-lock.json": {
+      "sha256": "a1f94bd60ef9fd26bb885b963841286c898e6d1929b3b9db16be16250a641696",
+      "mode": 420
+    },
+    "package-source.sh": {
+      "sha256": "d052c22e168094c0e6d251b92189ea3f02e7c5266c6f5cc6d91aca0946732955",
+      "mode": 493
+    },
+    "package.json": {
+      "sha256": "22f7f58d1242115614aaa2287959766de6f712cb34abac5af9d6db6730a3ae62",
+      "mode": 420
+    },
+    "scripts/doctor.ps1": {
+      "sha256": "9e382b7ec85140b38f2f2924ef94630791bfc74ebe465e7666f7dbcdf637ad53",
+      "mode": 420
+    },
+    "scripts/doctor.sh": {
+      "sha256": "3663ca6eb54b5f22fa7385f64bbdc2ec7e1525135057d743499df92d189cbb75",
+      "mode": 493
+    },
+    "scripts/install-dependencies.ps1": {
+      "sha256": "83c322f914df194b899e4d6ae0b191c26db8e404d856eafe54f1ab192b997f8b",
+      "mode": 420
+    },
+    "scripts/install-dependencies.sh": {
+      "sha256": "9b7739b0ec2d4eed67eaaa66cd627b252b58ca32f626a471e3286581451e3f2c",
+      "mode": 493
+    },
+    "scripts/set-backend-url.ps1": {
+      "sha256": "b72c0307d90986e0dc6b940a73ab5ef06ab3d2aaa8a0b4112327c629c7f39b63",
+      "mode": 420
+    },
+    "scripts/set-backend-url.sh": {
+      "sha256": "448cd9782ecb04947fe44607a4b5fa86142a3cb20a455ef653ed5324274061e2",
+      "mode": 493
+    },
+    "scripts/verify-no-secrets.ps1": {
+      "sha256": "e983081dea5ea7036b269b3387aa3e50e791ecc0fc0ce1f4c46dae3c0abd59f4",
+      "mode": 420
+    },
+    "scripts/verify-no-secrets.sh": {
+      "sha256": "d572fd4aa889be1ed001bb0b67c1a898b4a83b873869637fd12501742d953616",
+      "mode": 493
+    },
+    "src/App.tsx": {
+      "sha256": "b17dd17e474af226ce22534b5c49950d1cf9dae860535c0a05af029758cf609a",
+      "mode": 420
+    },
+    "src/lark.ts": {
+      "sha256": "01f9b9b86e69310fcae27f739c95701c7dc5e5271fab303fbdeea9ec69f9b829",
+      "mode": 420
+    },
+    "src/main.tsx": {
+      "sha256": "240903a71d5933c9b6910e054295ec4551c18803cd024ad6ef6d52134d96202a",
+      "mode": 420
+    },
+    "src/styles.css": {
+      "sha256": "963ed1031ba5eddef6bfc020b70f226a0da8bab19347a85552eb29ff99183710",
+      "mode": 420
+    },
+    "src/types.ts": {
+      "sha256": "21c2b72be14a23948a6f807ac8039eb38f25de0e6fc582dd7ccfb796474ccb33",
+      "mode": 420
+    },
+    "src/vite-env.d.ts": {
+      "sha256": "65996936fbb042915f7b74a200fcdde7e410f32a669b1ab9597cfaa4b0faddb5",
+      "mode": 420
+    },
+    "tsconfig.app.json": {
+      "sha256": "a7266d1c85fa6947c70073256d9a73e4c459e97b0b4ef24b5c48dcab498ef4c5",
+      "mode": 420
+    },
+    "tsconfig.json": {
+      "sha256": "770b4140bbb581e2dfd9ea9946ffc9c75a1d86ba7d2db5f77c83e37cbdf9d808",
+      "mode": 420
+    },
+    "tsconfig.node.json": {
+      "sha256": "3dc28b63563e20fab0d9f652f3039ed50e6c46bbdec66631a14822e8309b230d",
+      "mode": 420
+    },
+    "vite.config.d.ts": {
+      "sha256": "4b96dd19fd2949d28ce80e913412b0026dc421e5bf6c31d87c7b5eb11b5753b4",
+      "mode": 420
+    },
+    "vite.config.js": {
+      "sha256": "2a450dcb3b4dba1f5d61e4a407536e122b2e5974ac21461aa9db62f5932d60e1",
+      "mode": 420
+    },
+    "vite.config.ts": {
+      "sha256": "3918f71d59477b320251cf165bf1614f7b9acdb2e2d2763f9c563589a52b89a8",
+      "mode": 420
+    },
+    "windows-worker/README.md": {
+      "sha256": "95d09e65afa8b2385eeafad95a0d5bdabbc5637865dd49cf7fa218912c08c480",
+      "mode": 420
+    },
+    "windows-worker/install.ps1": {
+      "sha256": "50e96356cd6a0ac9af4cd5d7716ab8aa890c45d791fde265e466b93cd5303c15",
+      "mode": 420
+    },
+    "windows-worker/open-douyin-login.ps1": {
+      "sha256": "5086a74a2227de51003c5834aeccf8af6a00daa0185f4a1781a0bb2f6d9b3ae9",
+      "mode": 420
+    },
+    "windows-worker/requirements.txt": {
+      "sha256": "78771344c201ce4c5b1f6164274695a037cb920f6e1311f31720a0bcf8d160fc",
+      "mode": 420
+    },
+    "windows-worker/run-worker.ps1": {
+      "sha256": "61aebc24db465dabec91bfe2ac191cd67add96584a078feab14293640fbfdc42",
+      "mode": 420
+    },
+    "windows-worker/worker.py": {
+      "sha256": "b652610087ecae527d0876dfe6f584b3e097fac978ef9a4703c56c672217ba47",
+      "mode": 420
+    }
+  }
+}
