@@ -9,7 +9,7 @@ PLIST_PATH="${LAUNCH_AGENTS_DIR}/com.growing.feishu-video-extractor.plist"
 LABEL="com.growing.feishu-video-extractor"
 
 PUBLIC_URL="http://127.0.0.1:8000"
-ALLOWED_ORIGIN="https://alwaysgrowing.feishu.cn"
+ALLOWED_ORIGIN="https://your-company.feishu.cn"
 EXPECTED_PACK_ID="replit_3272d3cf20efe80b,replit_324c5cc92959ef25"
 BROWSER="edge"
 
@@ -37,6 +37,9 @@ case "$PUBLIC_URL" in
   *) printf 'Public URL must be local test URL or HTTPS.\n' >&2; exit 2 ;;
 esac
 case "$ALLOWED_ORIGIN" in
+  https://your-company.feishu.cn)
+    printf 'Set your Feishu origin with --origin https://YOUR_TENANT.feishu.cn before installing.\n' >&2
+    exit 2 ;;
   https://*) ;;
   *) printf 'Feishu origin must use HTTPS.\n' >&2; exit 2 ;;
 esac

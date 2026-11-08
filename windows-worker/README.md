@@ -15,10 +15,12 @@ Run PowerShell as the target user from this directory:
 
 ```powershell
 .\install.ps1 `
-  -BackendUrl "https://feishu-video-extractor-production.up.railway.app" `
+  -BackendUrl "https://your-service.up.railway.app" `
   -WorkerToken "<same secret as Railway WORKER_TOKEN>" `
   -Browser edge
 ```
+
+Replace `your-service.up.railway.app` with your own reachable backend hostname before running the command.
 
 The installer creates `%LOCALAPPDATA%\FeishuVideoWorker` and a logon scheduled task named `Feishu Video Download Worker`. The token is stored in a user-only ACL-protected config file.
 

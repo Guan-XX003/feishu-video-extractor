@@ -156,7 +156,7 @@
       "mode": 420
     },
     "mac-server/README.md": {
-      "sha256": "6e9074c217e980eb2601cf67bffa88e308b58ab2263c0fdc76925489447427c5",
+      "sha256": "33f04152828e2d7cd5a8979c85d43d45510f5322dbf5312824c08a74fc8233f0",
       "mode": 420
     },
     "mac-server/check-tunnel.sh": {
@@ -172,7 +172,7 @@
       "mode": 493
     },
     "mac-server/install.sh": {
-      "sha256": "9460dd8eea7cbd9a909b7e70cb2b61bb7087afb69b482b1b8364b1ac29182d42",
+      "sha256": "36122c0f354c71b95beae6c1fe6db2911f26182f8a8134f8c317f13da26ccd05",
       "mode": 493
     },
     "mac-server/open-douyin-login.command": {
@@ -300,7 +300,7 @@
       "mode": 420
     },
     "windows-worker/README.md": {
-      "sha256": "95d09e65afa8b2385eeafad95a0d5bdabbc5637865dd49cf7fa218912c08c480",
+      "sha256": "a59faff0066cd0af1dba9c6b497dbadeda24fc75d1c9baff33501dca665e8bdc",
       "mode": 420
     },
     "windows-worker/install.ps1": {

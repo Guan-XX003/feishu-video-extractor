@@ -18,9 +18,11 @@ They are never copied into the repository.
 ## Install the local backend
 
 ```bash
-./mac-server/install.sh
+./mac-server/install.sh --origin https://YOUR_TENANT.feishu.cn
 ./mac-server/status.sh
 ```
+
+Replace `YOUR_TENANT` with your own Feishu tenant name. The installer refuses to run with its default placeholder origin; pass `--origin` for your account.
 
 The installer creates a user LaunchAgent named
 `com.growing.feishu-video-extractor`. It binds only to `127.0.0.1:8000`,
