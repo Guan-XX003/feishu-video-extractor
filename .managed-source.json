@@ -1,9 +1,7 @@
 {
   "schema": 1,
-  "thread_id": "01a01895-290d-7f23-bcb4-c79119dc7629",
   "sources": [
     {
-      "source": "/Users/growing-1/Documents/ChatGPT/sql表/feishu-video-extractor",
       "destination": ".",
       "files": 73
     }
@@ -22,11 +20,11 @@
       "mode": 420
     },
     "MANAGEMENT.md": {
-      "sha256": "f4c4ab440bc5a9ff2693b1d6cf17a46a1fc4975c6ee3deaf29ee9ad18dc221e4",
+      "sha256": "8d27aa6cf78ca6932d283c31bc1601dae66d2442742045cdcabf2a04e2cd8e12",
       "mode": 420
     },
     "README.md": {
-      "sha256": "cea705ea46238d92dc0341a39de94587c38d392a188ac91dfd1c1b1db1cd3cbf",
+      "sha256": "97166f6ce364b639f84563a678cc8836f35f95f5ead665c4e007d3b3feaa2ea9",
       "mode": 420
     },
     "SETUP_OTHER_DEVICE.md": {
@@ -81,6 +79,10 @@
       "sha256": "43c6f3e3fe1ff389d1ff80bf7d81f08e5255a1d23c067cd04fa7f6690381cdd6",
       "mode": 420
     },
+    "docs/DEPLOYMENT_GUIDE.md": {
+      "sha256": "cea705ea46238d92dc0341a39de94587c38d392a188ac91dfd1c1b1db1cd3cbf",
+      "mode": 420
+    },
     "docs/browser-before.png": {
       "sha256": "6a2e557cc3a1ebcbb11d2f67e6fbfdcc5d149c30e0f1bbb904c9847d749acf61",
       "mode": 420
@@ -130,7 +132,7 @@
       "mode": 420
     },
     "field-shortcut/src/config.ts": {
-      "sha256": "7e7634ecf9c808fb228cca34eb9667e96d32979efb50596f1eb1e1a82b34e709",
+      "sha256": "42e1542e2226163d997677d3a20982c0b359c2faa6f2b333fb4471fb86c81010",
       "mode": 420
     },
     "field-shortcut/src/index.ts": {
