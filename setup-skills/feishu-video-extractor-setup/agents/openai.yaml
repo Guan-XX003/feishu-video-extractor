@@ -1,0 +1,4 @@
+interface:
+  display_name: "飞书视频插件配置引导"
+  short_description: "检查本地环境、选择后端部署方式并引导字段捷径签名配置和首条附件验证"
+  default_prompt: "请用 $feishu-video-extractor-setup 检查我的环境，并带我完成首次配置和最小用例验证。"

@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "repository": "feishu-video-extractor",
+  "setup_skill": "feishu-video-extractor-setup",
+  "skills": [
+    {
+      "name": "feishu-video-extractor-setup",
+      "path": "setup-skills/feishu-video-extractor-setup"
+    }
+  ]
+}

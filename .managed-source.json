@@ -24,7 +24,7 @@
       "mode": 420
     },
     "README.md": {
-      "sha256": "97166f6ce364b639f84563a678cc8836f35f95f5ead665c4e007d3b3feaa2ea9",
+      "sha256": "9284fb25f734ac69f26f5b69a3ca60317c78d95caf17c54949db643f91eaf9b6",
       "mode": 420
     },
     "SETUP_OTHER_DEVICE.md": {
@@ -191,6 +191,10 @@
       "sha256": "3ff2599f1fc2632769249d28e6fe442548199caaacf01c20f79f65788430467f",
       "mode": 493
     },
+    "onboarding.json": {
+      "sha256": "64ba029fc19de61e8bc73995763d2e032a6d44e77fa3568e2c39317e1c1db2d5",
+      "mode": 420
+    },
     "package-lock.json": {
       "sha256": "a1f94bd60ef9fd26bb885b963841286c898e6d1929b3b9db16be16250a641696",
       "mode": 420
@@ -219,6 +223,10 @@
       "sha256": "9b7739b0ec2d4eed67eaaa66cd627b252b58ca32f626a471e3286581451e3f2c",
       "mode": 493
     },
+    "scripts/install_skills.py": {
+      "sha256": "2cc653ac736e90b7bf24228cbbc329b7d035bdc8c477d5068403c2c22301b0f4",
+      "mode": 493
+    },
     "scripts/set-backend-url.ps1": {
       "sha256": "b72c0307d90986e0dc6b940a73ab5ef06ab3d2aaa8a0b4112327c629c7f39b63",
       "mode": 420
@@ -234,6 +242,14 @@
     "scripts/verify-no-secrets.sh": {
       "sha256": "d572fd4aa889be1ed001bb0b67c1a898b4a83b873869637fd12501742d953616",
       "mode": 493
+    },
+    "setup-skills/feishu-video-extractor-setup/SKILL.md": {
+      "sha256": "da5a986aebe9918b3eaf80cf0cb393064afb52be5196ba1adf3837f292f4c828",
+      "mode": 420
+    },
+    "setup-skills/feishu-video-extractor-setup/agents/openai.yaml": {
+      "sha256": "712360485c75fb506efdaf180ac1f8f70f41e9c19f0a767d460f89e6005102ed",
+      "mode": 420
     },
     "src/App.tsx": {
       "sha256": "b17dd17e474af226ce22534b5c49950d1cf9dae860535c0a05af029758cf609a",
