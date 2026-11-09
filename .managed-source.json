@@ -80,7 +80,7 @@
       "mode": 420
     },
     "docs/DEPLOYMENT_GUIDE.md": {
-      "sha256": "cea705ea46238d92dc0341a39de94587c38d392a188ac91dfd1c1b1db1cd3cbf",
+      "sha256": "943b89bb7948a78a789c6a0ab81c5e15c4c21e31c8509da616c40a379ae05d6f",
       "mode": 420
     },
     "docs/browser-before.png": {
@@ -156,7 +156,7 @@
       "mode": 420
     },
     "mac-server/README.md": {
-      "sha256": "33f04152828e2d7cd5a8979c85d43d45510f5322dbf5312824c08a74fc8233f0",
+      "sha256": "826d9902ef92d402a41f8deac4514f02ab9a262638da93c028428728938a972f",
       "mode": 420
     },
     "mac-server/check-tunnel.sh": {
@@ -172,7 +172,7 @@
       "mode": 493
     },
     "mac-server/install.sh": {
-      "sha256": "36122c0f354c71b95beae6c1fe6db2911f26182f8a8134f8c317f13da26ccd05",
+      "sha256": "795cbfec1c756e9f62326ab9392ef5f4e5d4342d83b9cd962d1b24fffb7b7d51",
       "mode": 493
     },
     "mac-server/open-douyin-login.command": {

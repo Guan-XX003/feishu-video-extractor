@@ -10,7 +10,7 @@ LABEL="com.growing.feishu-video-extractor"
 
 PUBLIC_URL="http://127.0.0.1:8000"
 ALLOWED_ORIGIN="https://your-company.feishu.cn"
-EXPECTED_PACK_ID="replit_3272d3cf20efe80b,replit_324c5cc92959ef25"
+EXPECTED_PACK_ID=""
 BROWSER="edge"
 
 usage() {

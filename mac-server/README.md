@@ -77,3 +77,5 @@ are stored in `~/Library/Application Support/FeishuVideoExtractor/logs/`.
 - Restart and log in after macOS updates before expecting downloads to work.
 - Only expose the HTTP backend through Tunnel; do not expose SSH or Screen
   Sharing through this hostname.
+
+The shortcut allowlist starts empty for first-time setup. After publishing your own shortcut, pass its official ID using `--pack-id YOUR_SHORTCUT_ID`.

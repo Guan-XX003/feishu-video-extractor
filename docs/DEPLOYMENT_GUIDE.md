@@ -52,7 +52,7 @@ mac-server/ macOS 本机服务、专用浏览器 Profile 和 Tunnel 配置
 提供固定的公网 HTTPS 地址：
 
 ```bash
-./mac-server/install.sh
+./mac-server/install.sh --origin https://YOUR_TENANT.feishu.cn
 ./mac-server/status.sh
 ```
 
